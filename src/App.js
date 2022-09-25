@@ -7,6 +7,7 @@ import RegistrationPage from './pages/RegistrationPage';
 import PublicRoute from './components/PublicRoute';
 import PrivateRoute from './components/PrivateRoute';
 import useAuthCheck from './hooks/useAuthCheck';
+import ProjectsPage from './pages/ProjectsPage';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
                 <Route path="/" element={<PublicRoute><LoginPage /></PublicRoute>} />
                 <Route path="/register" element={<PublicRoute><RegistrationPage /></PublicRoute>} />
                 <Route path="/teams" element={<PrivateRoute><TeamsPage /></PrivateRoute>} />
+                <Route path="/projects" element={<PrivateRoute><ProjectsPage /></PrivateRoute>} />
             </Routes>
         </Router>
     ) 

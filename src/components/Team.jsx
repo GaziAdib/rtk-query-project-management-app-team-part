@@ -7,11 +7,13 @@ import Select from 'react-select';
 import { useGetUsersQuery } from '../features/users/usersAPI';
 import MembersIcon from '../assets/images/members_icon.png'
 import MemberCard from './MemberCard';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 const Team = ({ team }) => {
 
-    const { id, color, category, description, date, admin, members } = team;
+    const { id, color, category, description, date, admin, members } = team || {};
 
     const [selectedUser, setSelectedUser] = useState('');
 
@@ -42,7 +44,7 @@ const Team = ({ team }) => {
         // console.log('menu button clicked!')
      }
 
-    const getMembersNotInTeam =  users.filter((u) => !members.some((m) => m === u.email))
+    const getMembersNotInTeam =  users?.filter((u) => !members.some((m) => m === u.email))
     // console.log(getMembersNotInTeam);
 
     
@@ -59,7 +61,7 @@ const Team = ({ team }) => {
 
 
     // selected options show to select 
-    const option =  getMembersNotInTeam.map((m) => {
+    const option =  getMembersNotInTeam?.map((m) => {
         return {label: m.email, value: m.email}
     })
 
@@ -67,8 +69,6 @@ const Team = ({ team }) => {
 
     const memberAssignHandler = (e) => {
         e.preventDefault();
-        console.log('submitted');
-
         addMemberInTeam({
             id,
             member: selectedUser?.email,
@@ -77,28 +77,20 @@ const Team = ({ team }) => {
         setButtonClicked(false);
     }
 
-
     // GET members info i a team
+    const membersInfoInTeam = users?.filter((u) => members?.some((m) => m === u.email));
+   
+    // useEffect(() => {
+    //     setMembersInfoBox(membersInfoInTeam)
+    // },[users, members, id, membersInfoInTeam])
 
-    const membersInfoInTeam = users.filter((u) => members.some((m) => m === u.email));
-    // console.log(membersInfoInTeam)
-
-    useEffect(() => {
-        setMembersInfoBox(membersInfoInTeam)
-    },[users, members, id])
-
-    // memebers Info Handler
-
+    // memebers Info Handler Modal
     const onMembersInfoHandler = () => {
-        console.log('show all memebers info')
+        setMembersInfoBox(membersInfoInTeam)
         setShowMemberInfoModal((prevState) => !prevState);
-        
     }
 
 
-
- 
-   
 
   return (
     <div
@@ -164,7 +156,7 @@ const Team = ({ team }) => {
 
                     
                         membersInfoBox?.map((member) => {
-                            return  <MemberCard member={member} key={member.id} />
+                            return  <MemberCard member={member} key={member.id} color={color} />
                                 
                         })
                     }

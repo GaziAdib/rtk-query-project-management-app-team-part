@@ -1,5 +1,6 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Link } from 'react-router-dom';
 import { userLoggedOut } from '../features/auth/authSlice';
 
 const NavBar = () => {
@@ -21,15 +22,15 @@ const NavBar = () => {
             >
                 <img src="./images/logo.png" className="h-10 w-10" />
                 <div className="ml-10">
-                    <a
+                    <Link
                         className="mx-2 text-sm font-semibold text-indigo-700"
-                        href="projects.html"
-                        >Projects</a>
+                        to="/projects"
+                        >Projects</Link>
                   
-                    <a
+                    <Link
                         className="mx-2 text-sm font-semibold text-gray-600 hover:text-indigo-700"
-                        href="teams.html">
-                        Teams</a>
+                        to="/teams">
+                        Teams</Link>
                     
                 </div>
                 <button

@@ -4,6 +4,8 @@ import { useAddTeamMutation } from "../features/teams/teamsAPI";
 import { useGetUsersQuery } from "../features/users/usersAPI";
 import isValidateEmail from "../utils/isValidEmail";
 import Error from "./Error";
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Modal({ open, control }) {
 
@@ -17,7 +19,6 @@ export default function Modal({ open, control }) {
 
     const {data: users, isLoading } = useGetUsersQuery();
 
-    // console.log(users);
 
     
     const [category, setCategory] = useState("");
@@ -30,6 +31,7 @@ export default function Modal({ open, control }) {
    const  handleSubmit = (e) => {
         e.preventDefault();
 
+    
         setError('')
             // add Team
             if(authUser) {
@@ -41,13 +43,22 @@ export default function Modal({ open, control }) {
                     date: new Date().getTime(),
                     members: [authUser?.email]
                 });
-                if(isAddTeamSuccess) {
-                    setColor('');
-                    setCategory('')
-                    setDescription('');
-                }
             }
-   }
+
+            if(isAddTeamSuccess) {
+                setColor('');
+                setCategory('')
+                setDescription('');
+
+                toast.success("New Team Created!", {
+                    autoClose: 3000,
+                    position: "top-right"
+                   });
+            }
+
+    }
+
+   
 
     return (
         open && (
