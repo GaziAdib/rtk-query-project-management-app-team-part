@@ -1,70 +1,88 @@
 import React from 'react'
+import { useDrop } from 'react-dnd';
+import { useDispatch } from 'react-redux';
+import { apiSlice } from '../../features/api/apiSlice';
+import { useGetProjectsQuery, useUpdateProjectStageMutation } from '../../features/projects/projectsAPI'
+import { checkLengthStage } from '../../utils/lengthCheckStageCount';
+import Error from '../Error';
+import ProjectCard from '../ProjectCard';
 
 const Done = () => {
-  return (
-    <div className="flex flex-col flex-shrink-0 w-72">
-        <div className="flex items-center flex-shrink-0 h-10 px-2">
-                        <span className="block text-sm font-semibold">Done</span>
-                        <span
-                            className="flex items-center justify-center w-5 h-5 ml-2 text-sm font-semibold text-indigo-500 bg-white rounded bg-opacity-30"
-                            >6</span>
-                        
 
-            </div>
-        <div className="flex flex-col pb-2 overflow-auto">
-            <div
-                className="relative flex flex-col items-start p-4 mt-3 bg-white rounded-lg cursor-pointer bg-opacity-90 group hover:bg-opacity-100"
-                draggable="true"
-            >
-                <button
-                    className="absolute top-0 right-0 flex items-center justify-center hidden w-5 h-5 mt-3 mr-2 text-gray-500 rounded hover:bg-gray-200 hover:text-gray-700 group-hover:flex"
-                >
-                    <svg
-                        className="w-4 h-4 fill-current"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                    >
-                        <path
-                            d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z"
-                        />
-                    </svg>
-                </button>
-                <span
-                    className="flex items-center h-6 px-3 text-xs font-semibold text-pink-500 bg-pink-100 rounded-full"
-                    />Design
+    const { data: allProjects, isLoading, isError, isSuccess, error } = useGetProjectsQuery();
+
+    const [updateProjectStage] = useUpdateProjectStageMutation();
+
+    const dispatch = useDispatch();
+
+    
+    // decide what to render
+    let content = '';
+
+    if(isLoading) {
+        content = <li className="m-2 text-center">Loading...</li>
+    }
+
+    if(!isLoading && isError) {
+        content = <li className="m-2 text-center"><Error message={error?.data}/></li>
+    } else if(!isLoading && !isError && allProjects?.length === 0) {
+        content = <li className="m-2 text-center">No Projects found!</li>
+    } else if(!isLoading && !isError && allProjects?.length > 0) {
+        content = allProjects.filter((f) => f.stage === 'done').map((project) => {
+            return <ProjectCard project={project} key={project.id} />
+        })
+    }
+
+
+    // DND DROP
+
+    const [{ isOver }, drop] = useDrop(() =>({
+        accept:"PROJECT_STAGE_CHANGED",
+        drop: (item, monitor) => moveItem(item.id),
+        collect: (monitor) => ({
+            isOver: !!monitor.isOver(),
+        })
+    }));
+
+
+    // update cache draft
+
+    const moveItem = (id) => {
+        dispatch(
+            apiSlice.util.updateQueryData(
+                        "getProjects",
+                        undefined,
+                        (draft) => {
+                            const project = draft?.find((project) => project.id === id);
+                            project.stage = "done";
+                        })
+                );
             
-                <h4 className="mt-3 text-sm font-medium">
-                    This is the title of the card for the thing that
-                    needs to be done.
-                </h4>
-                <div
-                    className="flex items-center w-full mt-3 text-xs font-medium text-gray-400"
-                >
-                    <div className="flex items-center">
-                        <svg
-                            className="w-4 h-4 text-gray-300 fill-current"
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                        >
-                            <path
-                                fillRule="evenodd"
-                                d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                                clipRule="evenodd"
-                            />
-                        </svg>
-                        <span className="ml-1 leading-none"
-                            />Dec 12
-                        
-                    </div>
+         // update the api 
+         updateProjectStage({
+            id,
+            stage: "done"
+         })
+         // do api update
+    }  
+    
+    const countProjects = checkLengthStage(allProjects, 'done');
 
-                    <img
-                        className="w-6 h-6 ml-auto rounded-full"
-                        src="https://randomuser.me/api/portraits/women/26.jpg"
-                    />
-                </div>
-            </div>
+
+
+  return (
+    <div className="flex flex-col flex-shrink-0 w-72 h-screen">
+        <div className="flex items-center flex-shrink-0 h-10 px-2">
+            <span className="block text-sm font-semibold">Done</span>
+                <span
+                     className="flex items-center justify-center w-5 h-5 ml-2 text-sm font-semibold text-indigo-500 bg-white rounded bg-opacity-30"
+                    >{countProjects}
+                </span>
+                            
+        </div>
+
+        <div ref={drop} className="flex flex-col pb-2 overflow-auto h-screen">
+           {content}
         </div>
     </div>
   )

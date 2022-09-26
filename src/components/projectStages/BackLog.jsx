@@ -6,14 +6,13 @@ import { apiSlice } from '../../features/api/apiSlice';
 import { useGetProjectsQuery, useUpdateProjectStageMutation } from '../../features/projects/projectsAPI';
 import ProjectCard from '../ProjectCard';
 import ProjectModal from '../ProjectModal';
+import { checkLengthStage } from '../../utils/lengthCheckStageCount';
 
 const BackLog = () => {
 
-    const { data: backlogProjects } = useGetProjectsQuery();
+    const { data: allProjects } = useGetProjectsQuery();
 
     const [updateProjectStage] = useUpdateProjectStageMutation();
-
-    const { search } = useSelector(state => state.projects)
 
     const [opened, setOpened] = useState(false);
 
@@ -26,8 +25,8 @@ const BackLog = () => {
        // DND DROP
 
        const [{ isOver }, drop] = useDrop(() =>({
-        accept:"PROJECT_MOVE",
-        drop: (item, monitor) => ready(item.id),
+        accept:"PROJECT_STAGE_CHANGED",
+        drop: (item, monitor) => moveItem(item.id),
         collect: (monitor) => ({
             isOver: !!monitor.isOver(),
         })
@@ -36,7 +35,7 @@ const BackLog = () => {
 
     // update cache draft
 
-    const ready = (id) => {
+    const moveItem = (id) => {
         dispatch(
             apiSlice.util.updateQueryData(
                         "getProjects",
@@ -55,13 +54,19 @@ const BackLog = () => {
          // do api update
     } 
 
+    // find lengh of stage projects count
+
+    const countProjects = checkLengthStage(allProjects, 'backlog');
+
+
+
   return (
-    <div className="flex flex-col flex-shrink-0 w-72 h-screen">
+    <div className="flex flex-col flex-shrink-0 w-72">
          <div className="flex items-center flex-shrink-0 h-10 px-2">
                         <span className="block text-sm font-semibold">Backlog</span>
                         <span
                             className="flex items-center justify-center w-5 h-5 ml-2 text-sm font-semibold text-indigo-500 bg-white rounded bg-opacity-30"
-                            >{backlogProjects?.length}</span>
+                            >{countProjects}</span>
                         
                         <button
                         onClick={controlModal}
@@ -89,23 +94,13 @@ const BackLog = () => {
         <ProjectModal control={controlModal} open={opened} />
 
 
-        <div ref={drop} className="flex flex-col pb-2 overflow-auto">
+        <div ref={drop} className="flex flex-col pb-2 overflow-auto h-screen">
             {
-            
+        
+                allProjects?.filter((f) => f.stage === 'backlog').map((project) => {
+                    return <ProjectCard project={project} key={project.id}/>
+                })
 
-                backlogProjects?.length > 0 && search !== '' ? (
-
-                    backlogProjects?.filter((f) => f.title.toLowerCase().includes(search)).map((project) => {
-                        return <ProjectCard project={project} key={project.id}/>
-                    })
-
-                ) : (
-                     backlogProjects?.length > 0 && backlogProjects?.filter((f) => f.stage === 'backlog').map((project) => {
-                        return <ProjectCard project={project} key={project.id} />
-                    })
-                )
-  
-                
             }
             
         </div>
