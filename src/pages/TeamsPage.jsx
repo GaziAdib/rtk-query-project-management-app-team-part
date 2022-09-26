@@ -37,7 +37,6 @@ const TeamsPage = () => {
         })
     }
 
-   // filter((team) => team.members.includes(authUser.email))
 
   return (
     <div

@@ -3,6 +3,8 @@ import { useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom'
 import Error from '../components/Error';
 import { useRegisterMutation } from '../features/auth/authAPI';
+import isValidateEmail from '../utils/isValidEmail';
+import LogoImage from '../assets/images/logo.png'
 
 
 const RegistrationPage = () => {
@@ -38,12 +40,13 @@ const RegistrationPage = () => {
     },[data, responseError, navigate]);
 
 
+
+
     const handleSubmit  = (e) => {
         e.preventDefault();
     
         setError('');
 
-    
         if(confirmPassword !== password) {
             setError('Passwords do not match');
         } else {
@@ -69,7 +72,7 @@ const RegistrationPage = () => {
                         <Link to="/">
                             <img
                                 className="mx-auto h-12 w-auto"
-                                src="https://i.pinimg.com/736x/0d/cf/b5/0dcfb548989afdf22afff75e2a46a508.jpg"
+                                src={LogoImage}
                                 alt="Learn with sumit"
                             />
                         </Link>

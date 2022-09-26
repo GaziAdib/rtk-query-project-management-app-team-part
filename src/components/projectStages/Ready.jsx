@@ -63,8 +63,9 @@ const Ready = () => {
             id,
             stage: "ready"
          })
-         // do api update
+        
     }  
+    
     
     const countProjects = checkLengthStage(allProjects, 'ready');
 

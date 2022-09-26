@@ -63,7 +63,7 @@ const Blocked = () => {
             id,
             stage: "blocked"
          })
-         // do api update
+        
     }  
     
     const countProjects = checkLengthStage(allProjects, 'blocked');

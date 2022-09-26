@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { useAddTeamMutation } from "../features/teams/teamsAPI";
-import { useGetUsersQuery } from "../features/users/usersAPI";
-import isValidateEmail from "../utils/isValidEmail";
 import Error from "./Error";
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
+
 
 export default function Modal({ open, control }) {
 
@@ -15,12 +13,7 @@ export default function Modal({ open, control }) {
 
     const { user: authUser } = useSelector(state => state.auth) || {};
 
-    // console.log(authUser)
 
-    const {data: users, isLoading } = useGetUsersQuery();
-
-
-    
     const [category, setCategory] = useState("");
     const [description, setDescription] = useState("");
     const [color, setColor] = useState('');
@@ -30,8 +23,6 @@ export default function Modal({ open, control }) {
     
    const  handleSubmit = (e) => {
         e.preventDefault();
-
-    
         setError('')
             // add Team
             if(authUser) {
@@ -45,18 +36,16 @@ export default function Modal({ open, control }) {
                 });
             }
 
-            if(isAddTeamSuccess) {
-                setColor('');
-                setCategory('')
-                setDescription('');
-
-                toast.success("New Team Created!", {
-                    autoClose: 3000,
-                    position: "top-right"
-                   });
-            }
-
+        setColor('');
+        setCategory('')
+        setDescription('');   
     }
+
+    
+
+       
+
+    
 
    
 
@@ -83,6 +72,7 @@ export default function Modal({ open, control }) {
                                     id="category"
                                     name="category"
                                     type="text"
+                                    value={category}
                                     required
                                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
                                     placeholder="Team Category"
@@ -97,6 +87,7 @@ export default function Modal({ open, control }) {
                                     id="description"
                                     name="description"
                                     type="text"
+                                    value={description}
                                     required
                                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
                                     placeholder="Team Description"
@@ -111,6 +102,7 @@ export default function Modal({ open, control }) {
                                     id="color"
                                     name="color"
                                     type="text"
+                                    value={color}
                                     required
                                     className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
                                     placeholder="Team Color (green, blue, yellow, purple etc)"
@@ -129,10 +121,7 @@ export default function Modal({ open, control }) {
                         </div>
 
 
-                        {/* {participant?.length === 0 && <Error message="This user does not exist" />} */}
-                        
 
-                        {/* {participant?.length > 0 && participant[0].email === myEmail && <Error message="You can not send message to yourself!" />} */}
 
                         {responseError && <Error message={responseError} />}
                     </form>

@@ -45,9 +45,7 @@ const Team = ({ team }) => {
      }
 
     const getMembersNotInTeam =  users?.filter((u) => !members.some((m) => m === u.email))
-    // console.log(getMembersNotInTeam);
-
-    
+  
 
     // Delete a Team by -- Admin
     const  deleteTeamHandler = () => {
@@ -80,9 +78,7 @@ const Team = ({ team }) => {
     // GET members info i a team
     const membersInfoInTeam = users?.filter((u) => members?.some((m) => m === u.email));
    
-    // useEffect(() => {
-    //     setMembersInfoBox(membersInfoInTeam)
-    // },[users, members, id, membersInfoInTeam])
+
 
     // memebers Info Handler Modal
     const onMembersInfoHandler = () => {

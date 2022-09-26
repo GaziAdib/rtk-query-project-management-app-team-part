@@ -1,30 +1,52 @@
 import React from 'react'
 import { useState } from 'react';
 import { useDrop } from 'react-dnd';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { apiSlice } from '../../features/api/apiSlice';
-import { useGetProjectsQuery, useUpdateProjectStageMutation } from '../../features/projects/projectsAPI';
+import { useGetProjectsQuery, useUpdateProjectStageMutation } from '../../features/projects/projectsAPI'
+import { checkLengthStage } from '../../utils/lengthCheckStageCount';
+import Error from '../Error';
 import ProjectCard from '../ProjectCard';
 import ProjectModal from '../ProjectModal';
-import { checkLengthStage } from '../../utils/lengthCheckStageCount';
 
 const BackLog = () => {
 
-    const { data: allProjects } = useGetProjectsQuery();
+    const { data: allProjects, isLoading, isError, isSuccess, error } = useGetProjectsQuery();
 
     const [updateProjectStage] = useUpdateProjectStageMutation();
 
+    const dispatch = useDispatch();
+
     const [opened, setOpened] = useState(false);
 
-    const dispatch = useDispatch();
+   
    
     const controlModal = () => {
         setOpened((prevState) => !prevState)
     }
 
-       // DND DROP
+    
+    // decide what to render
+    let content = '';
 
-       const [{ isOver }, drop] = useDrop(() =>({
+    if(isLoading) {
+        content = <li className="m-2 text-center">Loading...</li>
+    }
+
+    if(!isLoading && isError) {
+        content = <li className="m-2 text-center"><Error message={error?.data}/></li>
+    } else if(!isLoading && !isError && allProjects?.length === 0) {
+        content = <li className="m-2 text-center">No Projects found!</li>
+    } else if(!isLoading && !isError && allProjects?.length > 0) {
+        content = allProjects.filter((f) => f.stage === 'backlog').map((project) => {
+            return <ProjectCard project={project} key={project.id} />
+        })
+    }
+
+
+    // DND DROP
+
+    const [{ isOver }, drop] = useDrop(() =>({
         accept:"PROJECT_STAGE_CHANGED",
         drop: (item, monitor) => moveItem(item.id),
         collect: (monitor) => ({
@@ -51,24 +73,23 @@ const BackLog = () => {
             id,
             stage: "backlog"
          })
-         // do api update
-    } 
-
-    // find lengh of stage projects count
-
+        
+    }  
+    
     const countProjects = checkLengthStage(allProjects, 'backlog');
 
 
 
   return (
     <div className="flex flex-col flex-shrink-0 w-72">
-         <div className="flex items-center flex-shrink-0 h-10 px-2">
-                        <span className="block text-sm font-semibold">Backlog</span>
-                        <span
-                            className="flex items-center justify-center w-5 h-5 ml-2 text-sm font-semibold text-indigo-500 bg-white rounded bg-opacity-30"
-                            >{countProjects}</span>
-                        
-                        <button
+        <div className="flex items-center flex-shrink-0 h-10 px-2">
+            <span className="block text-sm font-semibold">Backlog</span>
+                <span
+                     className="flex items-center justify-center w-5 h-5 ml-2 text-sm font-semibold text-indigo-500 bg-white rounded bg-opacity-30"
+                    >{countProjects}
+                </span>
+
+                <button
                         onClick={controlModal}
                             className="flex items-center justify-center w-6 h-6 ml-auto text-indigo-500 rounded hover:bg-indigo-500 hover:text-indigo-100"
                         >
@@ -86,26 +107,16 @@ const BackLog = () => {
                                 ></path>
                             </svg>
                         </button>
-            </div>
-
-
-            
+                            
+        </div>
 
         <ProjectModal control={controlModal} open={opened} />
 
-
         <div ref={drop} className="flex flex-col pb-2 overflow-auto h-screen">
-            {
-        
-                allProjects?.filter((f) => f.stage === 'backlog').map((project) => {
-                    return <ProjectCard project={project} key={project.id}/>
-                })
-
-            }
-            
+           {content}
         </div>
     </div>
   )
 }
 
-export default BackLog
+export default BackLog;

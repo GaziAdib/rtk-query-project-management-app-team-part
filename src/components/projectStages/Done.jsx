@@ -63,7 +63,7 @@ const Done = () => {
             id,
             stage: "done"
          })
-         // do api update
+    
     }  
     
     const countProjects = checkLengthStage(allProjects, 'done');

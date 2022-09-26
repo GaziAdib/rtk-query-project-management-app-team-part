@@ -21,24 +21,15 @@ const ProjectModal = ({control, open}) => {
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [color, setColor] = useState("");
     const [selectedTeam, setSelectedTeam] = useState("");
     const [error, setError] = useState("");
 
-     // selected options show to select 
-    //  const option =  teams?.map((t) => {
-    //     return {label: t.category, value: t.category, color: t.color}
-    // })
 
     const option =  teams?.map((t) => {
         return {label: t.category, value: t}
     })
 
-   // console.log(option)
-
-    // console.log(selectedTeam);
-
-
+   
 
     const handleProjectSubmit = (e) => {
         e.preventDefault();
@@ -55,13 +46,12 @@ const ProjectModal = ({control, open}) => {
                 color: selectedTeam?.color,
                 date: new Date().getTime()
             });
-            if(isSuccess) {
-                setTitle('');
-                setDescription('');
-                //setColor('');
-                setSelectedTeam('');
-            }
+           
         }
+
+        setTitle('');
+        setDescription('');
+        setSelectedTeam('');
        
     }
 
@@ -87,6 +77,7 @@ const ProjectModal = ({control, open}) => {
                                 id="title"
                                 name="title"
                                 type="text"
+                                value={title}
                                 required
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
                                 placeholder="Project Title"
@@ -101,6 +92,7 @@ const ProjectModal = ({control, open}) => {
                                 id="description"
                                 name="description"
                                 type="text"
+                                value={description}
                                 required
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
                                 placeholder="Project Description"
@@ -114,24 +106,10 @@ const ProjectModal = ({control, open}) => {
                             </label>
                             
                             <div className="w-12/12 ml-auto">   
-                                <Select className="w-12/12" placeholder="Select Team"  onChange={(e) => setSelectedTeam(e.value)} options={option} />    
+                                <Select  className="w-12/12" placeholder="Select Team (Team Color Applied)"  onChange={(e) => setSelectedTeam(e.value)} options={option} />    
                             </div>
                         </div>
 
-                        {/* <div>
-                            <label htmlFor="to" className="sr-only">
-                                Project Color
-                            </label>
-                            <input
-                                id="color"
-                                name="color"
-                                type="text"
-                                required
-                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-violet-500 focus:border-violet-500 focus:z-10 sm:text-sm"
-                                placeholder="Project Color (green, blue, yellow, purple etc)"
-                                onChange={(e) => setColor(e.target.value)}
-                            />
-                        </div> */}
                     </div>
 
                     <div>
