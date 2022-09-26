@@ -63,7 +63,16 @@ export const projectsAPI = apiSlice.injectEndpoints({
                 }
             }
         }),
+        updateProjectStage: builder.mutation({
+            query: ({id, stage}) => ({
+                url: `/projects/${id}`,
+                method: 'PATCH',
+                body: {
+                    stage: stage
+                }
+            })
+        }),
     })
 })
 
-export const { useAddProjectMutation, useGetProjectsQuery, useDeleteProjectMutation  } = projectsAPI
+export const { useAddProjectMutation, useGetProjectsQuery, useDeleteProjectMutation, useUpdateProjectStageMutation  } = projectsAPI

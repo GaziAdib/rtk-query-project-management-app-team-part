@@ -62,6 +62,7 @@ const Doing = () => {
                     <img
                         className="w-6 h-6 ml-auto rounded-full"
                         src="https://randomuser.me/api/portraits/women/26.jpg"
+                        alt='something'
                     />
                 </div>
             </div>

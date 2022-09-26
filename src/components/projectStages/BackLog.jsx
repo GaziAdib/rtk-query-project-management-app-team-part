@@ -1,7 +1,9 @@
 import React from 'react'
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { useGetProjectsQuery } from '../../features/projects/projectsAPI';
+import { useDrop } from 'react-dnd';
+import { useDispatch, useSelector } from 'react-redux';
+import { apiSlice } from '../../features/api/apiSlice';
+import { useGetProjectsQuery, useUpdateProjectStageMutation } from '../../features/projects/projectsAPI';
 import ProjectCard from '../ProjectCard';
 import ProjectModal from '../ProjectModal';
 
@@ -9,16 +11,52 @@ const BackLog = () => {
 
     const { data: backlogProjects } = useGetProjectsQuery();
 
+    const [updateProjectStage] = useUpdateProjectStageMutation();
+
     const { search } = useSelector(state => state.projects)
 
     const [opened, setOpened] = useState(false);
+
+    const dispatch = useDispatch();
    
     const controlModal = () => {
         setOpened((prevState) => !prevState)
     }
 
+       // DND DROP
+
+       const [{ isOver }, drop] = useDrop(() =>({
+        accept:"PROJECT_MOVE",
+        drop: (item, monitor) => ready(item.id),
+        collect: (monitor) => ({
+            isOver: !!monitor.isOver(),
+        })
+    }));
+
+
+    // update cache draft
+
+    const ready = (id) => {
+        dispatch(
+            apiSlice.util.updateQueryData(
+                        "getProjects",
+                        undefined,
+                        (draft) => {
+                            const project = draft?.find((project) => project.id === id);
+                            project.stage = "backlog";
+                        })
+                );
+            
+         // update the api 
+         updateProjectStage({
+            id,
+            stage: "backlog"
+         })
+         // do api update
+    } 
+
   return (
-    <div className="flex flex-col flex-shrink-0 w-72">
+    <div className="flex flex-col flex-shrink-0 w-72 h-screen">
          <div className="flex items-center flex-shrink-0 h-10 px-2">
                         <span className="block text-sm font-semibold">Backlog</span>
                         <span
@@ -51,16 +89,9 @@ const BackLog = () => {
         <ProjectModal control={controlModal} open={opened} />
 
 
-        <div className="flex flex-col pb-2 overflow-auto">
+        <div ref={drop} className="flex flex-col pb-2 overflow-auto">
             {
             
-                // backlogProjects?.length > 0 && backlogProjects?.filter((f) => f.stage === 'backlog').map((project) => {
-                //     return <ProjectCard project={project} key={project.id}/>
-                // })
-
-                //  backlogProjects?.length > 0 && backlogProjects?.filter((f) => f.title.toLowerCase().includes(search)).map((project) => {
-                //     return <ProjectCard project={project} key={project.id}/>
-                // })
 
                 backlogProjects?.length > 0 && search !== '' ? (
 
