@@ -1,11 +1,15 @@
 import React from 'react'
+import LogoImage from '../assets/images/logo.png'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { userLoggedOut } from '../features/auth/authSlice';
+import SearchBox from './SearchBox';
 
 const NavBar = () => {
 
-    const dispatch = useDispatch();
+    const location = useLocation();
+
+   const dispatch = useDispatch();
 
    const { user } = useSelector(state => state.auth) || {};
    
@@ -16,11 +20,13 @@ const NavBar = () => {
         localStorage.clear();
    }
 
+
+
   return (
     <div
         className="flex items-center flex-shrink-0 w-full h-16 px-10 bg-white bg-opacity-75"
             >
-                <img src="./images/logo.png" className="h-10 w-10" />
+                <img src={LogoImage} className="h-10 w-10" />
                 <div className="ml-10">
                     <Link
                         className="mx-2 text-sm font-semibold text-indigo-700"
@@ -33,6 +39,26 @@ const NavBar = () => {
                         Teams</Link>
                     
                 </div>
+
+                {/* search bar For Projects Page only */}
+
+               {
+                location.pathname == '/projects' ? (<div
+                    className="border border-slate-200 flex items-center bg-white h-10 px-5 rounded-lg text-sm ring-emerald-200"
+                >
+                
+                
+                    <SearchBox />
+
+                    <img
+                        className="inline h-4 cursor-pointer"
+                        src={avatar}
+                        alt="Search"
+                    />
+                </div>) : ''
+               }
+
+
                 <button
                     className="flex items-center justify-center w-8 h-8 ml-auto overflow-hidden rounded-full cursor-pointer"
                 >
